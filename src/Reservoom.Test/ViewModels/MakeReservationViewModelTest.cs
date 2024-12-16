@@ -22,6 +22,7 @@ namespace Reservoom.Test.ViewModels
         [Test]
         public async Task ExecuteSubmitCommand_WithValidReservation_CreatesReservation()
         {
+            // Arrange
             ServiceCollection services = new ServiceCollection();
             services.AddSingleton<MakeReservationViewModel>();
             services.AddSingleton<HotelStore>();
@@ -39,7 +40,7 @@ namespace Reservoom.Test.ViewModels
 
             IReservoomDbContextFactory dbContextFactory = serviceProvider.GetRequiredService<IReservoomDbContextFactory>();
             ReservoomDbContext migrationDbContext = dbContextFactory.CreateDbContext();
-            await migrationDbContext.Database.MigrateAsync();
+            await migrationDbContext.Database.MigrateAsync(); // This is so we have all the database instance spun up before beginning to test
 
             MakeReservationViewModel viewModel = serviceProvider.GetRequiredService<MakeReservationViewModel>();
 
@@ -49,6 +50,7 @@ namespace Reservoom.Test.ViewModels
             viewModel.StartDate = new DateTime(2000, 1, 1);
             viewModel.EndDate = new DateTime(2000, 1, 2);
 
+            // Act
             await viewModel.SubmitCommand.ExecuteAsync(null);
 
             ReservoomDbContext dbContext = dbContextFactory.CreateDbContext();
@@ -61,6 +63,7 @@ namespace Reservoom.Test.ViewModels
                     r.StartTime == new DateTime(2000, 1, 1) &&
                     r.EndTime == new DateTime(2000, 1, 2));
 
+            // Assert
             Assert.That(createdReservation, Is.Not.Null);
         }
     }
